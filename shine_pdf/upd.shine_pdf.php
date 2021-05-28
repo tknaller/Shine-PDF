@@ -6,7 +6,6 @@ class Shine_pdf_upd {
 	
 	function __construct()
 	{
-		ee() =& get_instance();
 	}
 	
 	function install()
