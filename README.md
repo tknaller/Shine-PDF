@@ -16,3 +16,10 @@ Parameters extra
 =========
 - cache="yes"
 - debug="no"
+
+
+Installation
+=========
+- `cd libraries`
+- `php composer.phar update`
+- upload everything to `/system/user/addons`
