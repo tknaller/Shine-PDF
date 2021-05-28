@@ -9,15 +9,15 @@ if( ! class_exists('Channel'))
 
 class Shine_pdf extends Channel {
 
-	private $_debug = array();
+	private $_debug = array("debug!");
 
 	function __construct()
 	{
 		// Derive initial functions from Channel module
-		parent::Channel();
+		parent::__construct();
 
 		// Set the EE Cache Path? (hell you can override that)
-		$this->cache_path = $this->EE->config->item('cache_path') ? $this->EE->config->item('cache_path') : APPPATH.'cache/shine_pdf/';
+		$this->cache_path = PATH_CACHE;
 
 		//exist cache_path
 		if(!is_dir($this->cache_path))
@@ -30,8 +30,8 @@ class Shine_pdf extends Channel {
 		}
 
 		//load helper
-		$this->EE->load->helper('file');
-		$this->EE->load->helper('download');
+		ee()->load->helper('file');
+		ee()->load->helper('download');
 	}
 	
 	/*
@@ -40,40 +40,41 @@ class Shine_pdf extends Channel {
 	function make() {
 	
 		//cache param
-		$this->is_cache = in_array($this->EE->TMPL->fetch_param('cache', 'yes'), array('yes', 'y', 'on')) ? true : false;
-		$this->is_debug = in_array($this->EE->TMPL->fetch_param('debug', 'no'), array('yes', 'y', 'on')) ? true : false;
+		$this->is_cache = in_array(ee()->TMPL->fetch_param('cache', 'yes'), array('yes', 'y', 'on')) ? true : false;
+		$this->is_debug = in_array(ee()->TMPL->fetch_param('debug', 'no'), array('yes', 'y', 'on')) ? true : false;
 
 		// Grab our variables and arguments from template tag
 		$this->params = array(
 			'mode'					=> '',															// Best left alone
-			'format'				=> $this->EE->TMPL->fetch_param('format', 'A4'),				// Page format - can be subverted using {...width="" height=""...} params
-			'default_font_size'		=> $this->EE->TMPL->fetch_param('default_font_size', 11),		// Base page font size
-			'default_font'			=> $this->EE->TMPL->fetch_param('default_font', 'Helvetica'),	// Base page font face
-			'margin_left'			=> $this->EE->TMPL->fetch_param('margin_left', 15),				// Left page margin
-			'margin_right'			=> $this->EE->TMPL->fetch_param('margin_right', 15),			// Right page margin
-			'margin_top'			=> $this->EE->TMPL->fetch_param('margin_top', 16),				// Top page margin - begins below header
-			'margin_bottom'			=> $this->EE->TMPL->fetch_param('margin_bottom', 16),			// Bottom page margin - begins from footer
-			'margin_header'			=> $this->EE->TMPL->fetch_param('margin_header', 9),			// Margin from page to header
-			'margin_footer'			=> $this->EE->TMPL->fetch_param('margin_footer', 9),			// Margin from page to footer
-			'orientation'			=> $this->EE->TMPL->fetch_param('orientation', 'P'),			// Page orientation
-			'margin_top_auto'		=> $this->EE->TMPL->fetch_param('margin_top_auto', 'no'),		// Automatically calculate top margin
-			'margin_bottom_auto'	=> $this->EE->TMPL->fetch_param('margin_bottom_auto', 'no')		// Automatically calculate bottom margin
+			'format'				=> ee()->TMPL->fetch_param('format', 'A4'),				// Page format - can be subverted using {...width="" height=""...} params
+			'default_font_size'		=> ee()->TMPL->fetch_param('default_font_size', 11),		// Base page font size
+			'default_font'			=> ee()->TMPL->fetch_param('default_font', 'Helvetica'),	// Base page font face
+			'margin_left'			=> ee()->TMPL->fetch_param('margin_left', 15),				// Left page margin
+			'margin_right'			=> ee()->TMPL->fetch_param('margin_right', 15),			// Right page margin
+			'margin_top'			=> ee()->TMPL->fetch_param('margin_top', 16),				// Top page margin - begins below header
+			'margin_bottom'			=> ee()->TMPL->fetch_param('margin_bottom', 16),			// Bottom page margin - begins from footer
+			'margin_header'			=> ee()->TMPL->fetch_param('margin_header', 9),			// Margin from page to header
+			'margin_footer'			=> ee()->TMPL->fetch_param('margin_footer', 9),			// Margin from page to footer
+			'orientation'			=> ee()->TMPL->fetch_param('orientation', 'P'),			// Page orientation
+			'margin_top_auto'		=> ee()->TMPL->fetch_param('margin_top_auto', 'no'),		// Automatically calculate top margin
+			'margin_bottom_auto'	=> ee()->TMPL->fetch_param('margin_bottom_auto', 'no')		// Automatically calculate bottom margin
 		);
 
 		// Parse advanced conditionals within parsed {exp:channel:entries} markup
-		$input = $this->EE->TMPL->advanced_conditionals( parent::entries() );
+		$input = ee()->TMPL->advanced_conditionals( parent::entries() );
 		
 		// Parse any global variables that might be present in markup
-		$input = $this->EE->TMPL->parse_globals( $input );
+		$input = ee()->TMPL->parse_globals( $input );
 
+		$input = ee()->TMPL->parse_template_php( $input );
 		//no result
 		if($this->sql == '')
 		{
-			return $this->EE->TMPL->no_results();
+			return ee()->TMPL->no_results();
 		}
 
 		//re-query
-		$this->query = $this->EE->db->query($this->sql);
+		$this->query = ee()->db->query($this->sql);
 		
 		// Clean tag data
 		$this->_clean_tagdata($input);
@@ -95,7 +96,7 @@ class Shine_pdf extends Channel {
 	private function _process_pdf() {
 		
 		// Get the EE PDF library
-		$this->EE->load->library('ee_pdf');
+		ee()->load->library('ee_pdf');
 
 		// is there something todo?
 		if($this->query->num_rows() > 0)
@@ -113,10 +114,11 @@ class Shine_pdf extends Channel {
 			}
 			else
 			{	
-				 $this->EE->ee_pdf->debug = true;
+				 ee()->ee_pdf->debug = true;
 
 				// Push our previously-declared tag data to the library
-				$this->pdf = $this->EE->ee_pdf->load($this->params);
+				$this->pdf = ee()->ee_pdf->load($this->params);
+				$this->pdf->showImageErrors = true;
 
 				// Set automatic margins if needed
 				$this->_set_auto_margins();
@@ -263,8 +265,8 @@ class Shine_pdf extends Channel {
 	 */
 	private function _custom_width_height() {
 		
-		$width	= $this->EE->TMPL->fetch_param('width', FALSE);
-		$height	= $this->EE->TMPL->fetch_param('height', FALSE);
+		$width	= ee()->TMPL->fetch_param('width', FALSE);
+		$height	= ee()->TMPL->fetch_param('height', FALSE);
 		
 		// Set only if both width and height are declared, otherwise relegate to default format
 		if(isset($width) && isset($height) && $width && $height)

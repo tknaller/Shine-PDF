@@ -6,12 +6,12 @@ class Shine_pdf_upd {
 	
 	function __construct()
 	{
-		$this->EE =& get_instance();
+		ee() =& get_instance();
 	}
 	
 	function install()
 	{
-		$this->EE->load->dbforge();
+		ee()->load->dbforge();
 		
 		$data = array(
 			'module_name' => 'Shine_pdf',
@@ -20,22 +20,22 @@ class Shine_pdf_upd {
 			'has_publish_fields' => 'n'
 		);
 		
-		$this->EE->db->insert('modules', $data);
+		ee()->db->insert('modules', $data);
 		
 		return TRUE;
 	}
 	
 	function uninstall()
 	{
-		$this->EE->load->dbforge();
-		$this->EE->db->select('module_id');
+		ee()->load->dbforge();
+		ee()->db->select('module_id');
 		
-		$query = $this->EE->db->get_where('modules', array('module_name' => 'Shine_pdf'));
-		$this->EE->db->where('module_id', $query->row('module_id'));
-		$this->EE->db->delete('module_member_groups');
+		$query = ee()->db->get_where('modules', array('module_name' => 'Shine_pdf'));
+		ee()->db->where('module_id', $query->row('module_id'));
+		ee()->db->delete('module_member_groups');
 	
-		$this->EE->db->where('module_name', 'Shine_pdf');
-		$this->EE->db->delete('modules');
+		ee()->db->where('module_name', 'Shine_pdf');
+		ee()->db->delete('modules');
 			
 		return TRUE;
 	}

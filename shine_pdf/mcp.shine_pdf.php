@@ -6,7 +6,7 @@ class Shine_pdf_mcp {
 	
 	function __construct()
 	{
-	    $this->EE =& get_instance();
+	    ee() =& get_instance();
 	}
 	
 }

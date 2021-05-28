@@ -5,13 +5,12 @@ Generates PDFs on-the-fly from ExpressionEngine templates.
 
 Clone
 =========
-This is a clone version of the original version. http://devot-ee.com/add-ons/shine-pdf
+This is a clone version of the cloned version https://github.com/reinos/Shine-PDF
 
-In this version there are modifications what will avoid problems like:
-- caching
-- error on big documents
-- no_result
-- debug
+This Version
+- enables use of EE > 2
+- enables use of PHP > 7
+- uses current mPDF (v8.0.11)
 
 Parameters extra
 =========
